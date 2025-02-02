@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup Form with CleverTap</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fbe8d3; /* Light beige background */
+            margin: 0;
+            padding: 0;
+        }
+        h2 {
+            text-align: center;
+            color: #d67c8e; /* Soft dark pink for the heading */
+            margin-top: 40px;
+            font-size: 2.5em;
+        }
+        form {
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #fddde4; /* Light pink form background */
+            border-radius: 10px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            border: 1px solid #d8b8a3; /* Beige border */
+        }
+        label {
+            font-size: 16px;
+            color: #d67c8e; /* Soft dark pink for labels */
+            margin-bottom: 8px;
+            display: block;
+        }
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: 1px solid #d8b8a3; /* Beige border */
+            border-radius: 6px;
+            box-sizing: border-box;
+            background-color: #fff5f0; /* Very light pink background */
+            font-size: 16px;
+            color: #7a4b56; /* Darker text color */
+        }
+        input:focus {
+            border-color: #d67c8e; /* Soft dark pink border on focus */
+            background-color: #ffffff; /* White background when focused */
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #f1a7c4; /* Light pink button */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            margin: 12px 0;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #d67c8e; /* Darker pink on hover */
+        }
+        button:disabled {
+            background-color: #f3d4d9; /* Light pink for disabled buttons */
+            cursor: not-allowed;
+        }
+    </style>
+    <script type="text/javascript">
+        var clevertap = {event:[], profile:[], onUserLogin:[], notifications:[], privacy:[]};
+        clevertap.account = [{id: "Z44-Z4K-K65Z"}];
+        clevertap.privacy.push({optOut: false});
+        clevertap.privacy.push({useIP: true});
+        (function () {
+            var wzrk = document.createElement("script");
+            wzrk.type = "text/javascript";
+            wzrk.async = true;
+            wzrk.src = "https://d2r1yp2w7bby2u.cloudfront.net/js/clevertap.min.js";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(wzrk, s);
+        })();
+    </script>
+</head>
+<body>
+    <h2>Signup Form</h2>
+    <form id="signupForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required><br>
+        
+        <label for="email">Email Address:</label>
+        <input type="email" id="email" required><br>
+        
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" required><br>
+        
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" required><br>
+        
+        <button type="button" id="loginButton" onclick="loginUser()">Login</button>
+        <button type="button" id="profileButton" onclick="pushProfile()">Profile Push</button>
+        <button type="button" id="eventButton" onclick="raiseEvent()">Raise Event</button>
+        <button type="button" id="pushButton" onclick="askForPush()">Ask For Push</button>
+    </form>
+
+    <script>
+        // Disable buttons until form is filled
+        function toggleButtons() {
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const phone = document.getElementById("phone").value;
+            const dob = document.getElementById("dob").value;
+
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.disabled = !(name && email && phone && dob);
+            });
+        }
+
+        // Triggered whenever user changes form data
+        document.getElementById("signupForm").addEventListener("input", toggleButtons);
+        toggleButtons(); // Initial check
+
+        function loginUser() {
+            let name = document.getElementById("name").value;
+            let email = document.getElementById("email").value;
+            let phone = document.getElementById("phone").value;
+            let dob = new Date(document.getElementById("dob").value);
+
+            clevertap.onUserLogin.push({
+                "Site": {
+                    "Name": name,
+                    "Email": email,
+                    "Phone": phone,
+                    "DOB": dob
+                }
+            });
+            alert("User logged in with CleverTap");
+        }
+
+        function pushProfile() {
+            let name = document.getElementById("name").value;
+            let email = document.getElementById("email").value;
+            let phone = document.getElementById("phone").value;
+            let dob = new Date(document.getElementById("dob").value);
+
+            clevertap.profile.push({
+                "Site": {
+                    "Name": name,
+                    "Email": email,
+                    "Phone": phone,
+                    "DOB": dob
+                }
+            });
+            alert("Profile pushed to CleverTap");
+        }
+
+        function raiseEvent() {
+            clevertap.event.push("Custom Event", {
+                "stringProperty": "Sample String",
+                "integerProperty": 42,
+                "floatProperty": 3.14,
+                "dateTimeProperty": new Date()
+            });
+            alert("Custom event raised");
+        }
+
+        function askForPush() {
+            clevertap.notifications.push({
+                "titleText": 'Would you like to receive Push Notifications?',
+                "bodyText": 'We promise to only send you relevant content and give you updates on your transactions',
+                "okButtonText": 'Sign me up!',
+                "rejectButtonText": 'No thanks',
+                "askAgainTimeInSeconds": 5,
+                "okButtonColor": '#f28046'
+            });
+        }
+    </script>
+</body>
+</html>
